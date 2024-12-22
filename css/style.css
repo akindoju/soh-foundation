@@ -268,6 +268,21 @@ a:focus {
 
 }
 
+.foundation{
+  position: relative;
+  top: 15px;
+  width: 50px;
+  height: 50px;
+}
+
+.soh img{ 
+  position: fixed;
+  left: 15px;
+  top: 15px;
+  width: 50px;
+  height: 50px;
+}
+
 .navbar-brand span {
   font-size: 24px;
   font-weight: 700;
@@ -445,12 +460,14 @@ a:focus {
 .gallery_section .img-box {
   display: -webkit-box;
   display: -ms-flexbox;
-  display: flex;
+  display: table;
   overflow: hidden;
   position: relative;
 }
 
 .gallery_section .img-box img {
+  width: 40%;
+  padding: 5px;
   min-width: 100%;
   min-height: 100%;
 }
@@ -479,6 +496,12 @@ a:focus {
   transition: opacity 0.2s;
   color: #ffffff;
   font-size: 24px;
+}
+
+.gallery_section .img-box::after{
+  content: "";
+  display: table;
+  clear: both;
 }
 
 .gallery_section .img-box::before {
@@ -921,3 +944,17 @@ a:focus {
   color: inherit;
 }
 /*# sourceMappingURL=style.css.map */
+
+@media only screen and (max-width: 400px) {
+  .carousel-inner .img-box {
+
+    width: 90%;
+  }
+}
+
+@media only screen and (max-width: 400px) {
+  .carousel-inner .img-box{
+
+    width: 90%;
+  }
+}
