@@ -1,10 +1,13 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { supabase } from "@/lib/supabase"
+import { supabaseAdmin } from "@/lib/supabaseAdmin"
 
 // GET - Fetch all gallery items
 export async function GET() {
   try {
-    const { data, error } = await supabase.from("gallery").select("*").order("created_at", { ascending: false })
+    const { data, error } = await supabaseAdmin
+      .from("gallery")
+      .select("*")
+      .order("created_at", { ascending: false })
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 })
@@ -22,12 +25,11 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { title, description, event_date, location, image_url } = body
 
-    // Validate required fields
     if (!title || !description || !event_date || !location || !image_url) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
     }
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from("gallery")
       .insert([
         {
@@ -61,19 +63,19 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Get the item first to delete the image from storage
-    const { data: item } = await supabase.from("gallery").select("image_url").eq("id", id).single()
+    const { data: item } = await supabaseAdmin
+      .from("gallery")
+      .select("image_url")
+      .eq("id", id)
+      .single()
 
     if (item?.image_url) {
-      // Extract file path from URL
       const urlParts = item.image_url.split("/")
       const filePath = `gallery/${urlParts[urlParts.length - 1]}`
-
-      // Delete from storage
-      await supabase.storage.from("images").remove([filePath])
+      await supabaseAdmin.storage.from("images").remove([filePath])
     }
 
-    // Delete from database
-    const { error } = await supabase.from("gallery").delete().eq("id", id)
+    const { error } = await supabaseAdmin.from("gallery").delete().eq("id", id)
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 })

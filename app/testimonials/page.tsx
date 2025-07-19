@@ -7,7 +7,7 @@ const testimonials = [
     id: 1,
     name: "Babatunde Naomi Tinuoluwa",
     role: "Community Leader",
-    image: "/placeholder.svg?height=80&width=80",
+    image: "/image0 (1).jpeg",
     quote:
       "Stone of Help Foundation has been a beacon of hope in our community. Their dedication to education and empowerment has transformed countless lives. The Children's Day celebration they organized brought so much joy to our children and reminded us of the importance of investing in our future generation.",
     rating: 5,
@@ -16,7 +16,7 @@ const testimonials = [
     id: 2,
     name: "Faith Oluwatomi",
     role: "Program Beneficiary",
-    image: "/placeholder.svg?height=80&width=80",
+    image: "/client 2 (1).jpg",
     quote:
       "The skill acquisition program changed my life completely. I learned valuable skills that have enabled me to start my own small business and support my family. The foundation didn't just teach us skills; they gave us hope and the confidence to believe in ourselves. I am forever grateful for their support.",
     rating: 5,
