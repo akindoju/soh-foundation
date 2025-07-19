@@ -23,7 +23,7 @@ export default function ServicesPage() {
               <Card className="overflow-hidden">
                 <div className="relative h-64">
                   <Image
-                    src="/placeholder.svg?height=256&width=400"
+                    src="/L12.jpg"
                     alt="Children's Day Celebration"
                     fill
                     className="object-cover"
@@ -58,7 +58,7 @@ export default function ServicesPage() {
               <Card className="overflow-hidden">
                 <div className="relative h-64">
                   <Image
-                    src="/placeholder.svg?height=256&width=400"
+                    src="/hero-slide-2.jpg"
                     alt="Skill Acquisition Program"
                     fill
                     className="object-cover"

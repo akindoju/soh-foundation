@@ -11,31 +11,11 @@ import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Upload, Calendar, MapPin, Edit, Trash2, Plus, LogOut, Loader2 } from "lucide-react"
+import { useAuth } from "@/hooks/useAuth"
 import { useToast } from "@/hooks/use-toast"
 import Image from "next/image"
 
 // Mock authentication state
-const useAuth = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [user, setUser] = useState<{ email: string; role: string } | null>(null)
-
-  const login = (email: string, password: string) => {
-    // Mock login - in real app, this would authenticate with Supabase
-    if (email === "admin@sohfoundation.com" && password === "admin123") {
-      setIsAuthenticated(true)
-      setUser({ email, role: "admin" })
-      return true
-    }
-    return false
-  }
-
-  const logout = () => {
-    setIsAuthenticated(false)
-    setUser(null)
-  }
-
-  return { isAuthenticated, user, login, logout }
-}
 
 // Login Component
 function LoginForm({ onLogin }: { onLogin: (email: string, password: string) => boolean }) {
