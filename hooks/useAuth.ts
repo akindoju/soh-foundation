@@ -1,5 +1,3 @@
-// hooks/useAuth.ts
-
 "use client"
 
 import { useEffect, useState } from "react"
@@ -10,6 +8,7 @@ export function useAuth() {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
 
+  // Get initial session
   useEffect(() => {
     const getSession = async () => {
       const {
@@ -29,6 +28,7 @@ export function useAuth() {
 
     getSession()
 
+    // Listen for auth changes
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -40,5 +40,27 @@ export function useAuth() {
     }
   }, [])
 
-  return { user, loading }
+  const login = async (email: string, password: string): Promise<boolean> => {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    })
+
+    if (error) {
+      console.error("Login error:", error.message)
+      return false
+    }
+
+    setUser(data.user)
+    return true
+  }
+
+  const logout = async () => {
+    await supabase.auth.signOut()
+    setUser(null)
+  }
+
+  const isAuthenticated = !!user
+
+  return { user, loading, isAuthenticated, login, logout }
 }
