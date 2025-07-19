@@ -21,13 +21,13 @@ export default function Footer() {
               comprehensive programs that create lasting positive change.
             </p>
             <div className="flex gap-4">
-              <a href="#" className="p-2 bg-blue-600 rounded-full hover:bg-blue-700 transition-colors">
+              <a href="https://web.facebook.com/people/Yetunde-Oluloto/pfbid0VHHCScM4UJasmLJmEs79wuQgDP5nNrEAdzUBZotTCmTP8XJzvv5p3Ypm3ih6hTUfl/" className="p-2 bg-blue-600 rounded-full hover:bg-blue-700 transition-colors">
                 <Facebook className="w-5 h-5" />
               </a>
               <a href="#" className="p-2 bg-blue-400 rounded-full hover:bg-blue-500 transition-colors">
                 <Twitter className="w-5 h-5" />
               </a>
-              <a href="#" className="p-2 bg-pink-600 rounded-full hover:bg-pink-700 transition-colors">
+              <a href="https://www.instagram.com/sohf_oundation?igsh=MWN4NDRibjA3Z2owbA==" className="p-2 bg-pink-600 rounded-full hover:bg-pink-700 transition-colors">
                 <Instagram className="w-5 h-5" />
               </a>
               <a href="#" className="p-2 bg-blue-700 rounded-full hover:bg-blue-800 transition-colors">
@@ -72,14 +72,20 @@ export default function Footer() {
           <div>
             <h3 className="font-semibold text-lg mb-4">Contact Info</h3>
             <div className="space-y-3">
-              <div className="flex items-center gap-3">
+
+              {/* Phone */}
+              <a href="tel:+2348128747573" className="flex items-center gap-3 hover:text-blue-300 transition">
                 <Phone className="w-5 h-5 text-blue-400" />
                 <span className="text-gray-300">+234 812 874 7573</span>
-              </div>
-              <div className="flex items-center gap-3">
+              </a>
+
+              {/* Email */}
+              <a href="mailto:1sohfoundation@gmail.com" className="flex items-center gap-3 hover:text-blue-300 transition">
                 <Mail className="w-5 h-5 text-blue-400" />
-                <span className="text-gray-300">sohfoundation@gmail.com</span>
-              </div>
+                <span className="text-gray-300">1sohfoundation@gmail.com</span>
+              </a>
+
+              {/* Location */}
               <div className="flex items-start gap-3">
                 <MapPin className="w-5 h-5 text-blue-400 mt-1" />
                 <span className="text-gray-300">Nigeria</span>
