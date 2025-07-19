@@ -25,20 +25,17 @@ const heroSlides = [
 export default function HomePage() {
   const [currentSlide, setCurrentSlide] = useState(0)
 
-  // Auto-advance slides every 3 seconds
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % heroSlides.length)
-    }, 10000) // Changed to 10 seconds
-
+    }, 10000)
     return () => clearInterval(timer)
   }, [])
 
   return (
     <div className="min-h-screen">
       {/* Hero Slider Section */}
-      <section className="relative h-screen overflow-hidden">
-        {/* Background Images */}
+      <section className="relative h-[80vh] md:h-screen overflow-hidden">
         {heroSlides.map((slide, index) => (
           <div
             key={slide.id}
@@ -50,44 +47,36 @@ export default function HomePage() {
               src={slide.image || "/placeholder.svg"}
               alt={slide.title}
               fill
-              className="object-cover"
+              className="object-cover w-full h-full"
+              sizes="(max-width: 768px) 100vw, 100vh"
               priority={index === 0}
             />
-            {/* Light overlay for better text readability */}
             <div className="absolute inset-0 bg-black bg-opacity-20" />
           </div>
         ))}
 
-        {/* Content Overlay - Alternating Left/Right */}
+        {/* Content Overlay */}
         <div className="relative z-10 h-full">
           <div className="container mx-auto px-4 h-full">
-            {/* Logo and Content - Alternating Position */}
             <div
               className={`absolute bottom-8 ${
-                currentSlide % 2 === 0 ? "left-8" : "right-8"
-              } max-w-md transition-all duration-1000`}
+                currentSlide % 2 === 0 ? "left-4" : "right-4"
+              } w-[90%] max-w-md transition-all duration-1000`}
             >
               <div className="text-white">
-                {/* Small Logo */}
                 <div className="mb-4">
                   <Image src="/logo.png" alt="SOH Foundation Logo" width={60} height={60} className="mb-3" />
                 </div>
-
-                {/* Foundation Name */}
                 <h1 className="text-2xl md:text-3xl font-bold mb-2">Stone of Help Foundation</h1>
                 <p className="text-sm md:text-base mb-3 opacity-90">
                   Nourish, Educate, and Empower the Most Vulnerable
                 </p>
-
-                {/* Dynamic slide content */}
                 <div className="mb-4">
                   <h2 className="text-lg md:text-xl font-semibold mb-2 text-yellow-300">
                     {heroSlides[currentSlide].title}
                   </h2>
                   <p className="text-sm md:text-base opacity-90">{heroSlides[currentSlide].subtitle}</p>
                 </div>
-
-                {/* Single Contact Button */}
                 <Button asChild size="sm" className="bg-white text-blue-600 hover:bg-gray-100">
                   <Link href="/contact">Contact Us</Link>
                 </Button>
@@ -111,7 +100,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Rest of the component remains the same */}
       {/* Mission Overview */}
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
