@@ -69,13 +69,13 @@ export default function ContactPage() {
               <div>
                 <h3 className="font-semibold mb-4">Follow Us</h3>
                 <div className="flex gap-4">
-                  <a href="#" className="p-3 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors">
+                  <a href="https://web.facebook.com/people/Yetunde-Oluloto/pfbid0VHHCScM4UJasmLJmEs79wuQgDP5nNrEAdzUBZotTCmTP8XJzvv5p3Ypm3ih6hTUfl/" className="p-3 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors">
                     <Facebook className="w-5 h-5" />
                   </a>
                   <a href="#" className="p-3 bg-blue-400 text-white rounded-full hover:bg-blue-500 transition-colors">
                     <Twitter className="w-5 h-5" />
                   </a>
-                  <a href="#" className="p-3 bg-pink-600 text-white rounded-full hover:bg-pink-700 transition-colors">
+                  <a href="https://www.instagram.com/sohf_oundation?igsh=MWN4NDRibjA3Z2owbA==" className="p-3 bg-pink-600 text-white rounded-full hover:bg-pink-700 transition-colors">
                     <Instagram className="w-5 h-5" />
                   </a>
                   <a href="#" className="p-3 bg-blue-700 text-white rounded-full hover:bg-blue-800 transition-colors">
