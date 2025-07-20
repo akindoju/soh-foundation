@@ -10,7 +10,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen">
       {/* Hero Video Section */}
-      <section className="relative h-[80vh] md:h-screen overflow-hidden">
+      <section className="relative min-h-[50vh] md:min-h-[80vh] overflow-hidden">
         <video
           autoPlay
           muted
@@ -28,13 +28,14 @@ export default function HomePage() {
         <div className="relative z-20 h-full flex items-center">
           <div className="container mx-auto px-4">
             <div className="max-w-md text-white">
+              {/*
               <Image
                 src="/logo.png"
                 alt="SOH Foundation Logo"
                 width={60}
                 height={60}
                 className="mb-4"
-              />{/*
+              />
               <h1 className="text-3xl md:text-4xl font-bold mb-2">Stone of Help Foundation</h1>
               <p className="text-base md:text-lg mb-4 opacity-90">
                 Nourish, Educate, and Empower the Most Vulnerable
@@ -45,13 +46,13 @@ export default function HomePage() {
                 className="bg-white text-blue-600 hover:bg-gray-100"
               >
                 <Link href="/contact">Contact Us</Link>
-              </Button>*/}
+              </Button>
+              */}
             </div>
           </div>
         </div>
-      </section> 
+      </section>
 
-      {/* Rest of the Page (unchanged) */}
       {/* Mission Overview */}
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
