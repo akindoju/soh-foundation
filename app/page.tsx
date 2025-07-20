@@ -1,105 +1,57 @@
 "use client"
 
-import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Heart, BookOpen, Utensils, Building } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 
-const heroSlides = [
-  {
-    id: 1,
-    image: "/hero-slide-1.jpg",
-    title: "Empowering Communities Together",
-    subtitle: "Our dedicated team working alongside community members to create lasting change",
-  },
-  {
-    id: 2,
-    image: "/hero-slide-2.jpg",
-    title: "Building Skills, Building Futures",
-    subtitle: "Hands-on training programs that empower individuals with practical life skills",
-  },
-]
-
 export default function HomePage() {
-  const [currentSlide, setCurrentSlide] = useState(0)
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % heroSlides.length)
-    }, 10000)
-    return () => clearInterval(timer)
-  }, [])
-
   return (
     <div className="min-h-screen">
-      {/* Hero Slider Section */}
+      {/* Hero Video Section */}
       <section className="relative h-[80vh] md:h-screen overflow-hidden">
-        {heroSlides.map((slide, index) => (
-          <div
-            key={slide.id}
-            className={`absolute inset-0 transition-opacity duration-1000 ${
-              index === currentSlide ? "opacity-100" : "opacity-0"
-            }`}
-          >
-            <Image
-              src={slide.image || "/placeholder.svg"}
-              alt={slide.title}
-              fill
-              className="object-cover w-full h-full"
-              sizes="(max-width: 768px) 100vw, 100vh"
-              priority={index === 0}
-            />
-            <div className="absolute inset-0 bg-black bg-opacity-20" />
-          </div>
-        ))}
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover"
+        >
+          <source src="/Homepage.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+
+        <div className="absolute inset-0 bg-black bg-opacity-30 z-10" />
 
         {/* Content Overlay */}
-        <div className="relative z-10 h-full">
-          <div className="container mx-auto px-4 h-full">
-            <div
-              className={`absolute bottom-8 ${
-                currentSlide % 2 === 0 ? "left-4" : "right-4"
-              } w-[90%] max-w-md transition-all duration-1000`}
-            >
-              <div className="text-white">
-                <div className="mb-4">
-                  <Image src="/logo.png" alt="SOH Foundation Logo" width={60} height={60} className="mb-3" />
-                </div>
-                <h1 className="text-2xl md:text-3xl font-bold mb-2">Stone of Help Foundation</h1>
-                <p className="text-sm md:text-base mb-3 opacity-90">
-                  Nourish, Educate, and Empower the Most Vulnerable
-                </p>
-                <div className="mb-4">
-                  <h2 className="text-lg md:text-xl font-semibold mb-2 text-yellow-300">
-                    {heroSlides[currentSlide].title}
-                  </h2>
-                  <p className="text-sm md:text-base opacity-90">{heroSlides[currentSlide].subtitle}</p>
-                </div>
-                <Button asChild size="sm" className="bg-white text-blue-600 hover:bg-gray-100">
-                  <Link href="/contact">Contact Us</Link>
-                </Button>
-              </div>
+        <div className="relative z-20 h-full flex items-center">
+          <div className="container mx-auto px-4">
+            <div className="max-w-md text-white">
+              <Image
+                src="/logo.png"
+                alt="SOH Foundation Logo"
+                width={60}
+                height={60}
+                className="mb-4"
+              />
+              <h1 className="text-3xl md:text-4xl font-bold mb-2">Stone of Help Foundation</h1>
+              <p className="text-base md:text-lg mb-4 opacity-90">
+                Nourish, Educate, and Empower the Most Vulnerable
+              </p>
+              <Button
+                asChild
+                size="sm"
+                className="bg-white text-blue-600 hover:bg-gray-100"
+              >
+                <Link href="/contact">Contact Us</Link>
+              </Button>
             </div>
           </div>
         </div>
-
-        {/* Slide Indicators */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20 flex space-x-3">
-          {heroSlides.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setCurrentSlide(index)}
-              className={`w-3 h-3 rounded-full transition-all ${
-                index === currentSlide ? "bg-white" : "bg-white bg-opacity-50"
-              }`}
-              aria-label={`Go to slide ${index + 1}`}
-            />
-          ))}
-        </div>
       </section>
 
+      {/* Rest of the Page (unchanged) */}
       {/* Mission Overview */}
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
