@@ -86,3 +86,38 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json({ error: "Failed to delete gallery item" }, { status: 500 })
   }
 }
+
+// PUT - Update gallery item
+export async function PUT(request: NextRequest) {
+  try {
+    const body = await request.json()
+    const { id, title, description, event_date, location, image_url } = body
+
+    if (!id || !title || !description || !event_date || !location) {
+      return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
+    }
+
+    const { data, error } = await supabaseAdmin
+      .from("gallery")
+      .update({
+        title,
+        description,
+        event_date,
+        location,
+        image_url,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", id)
+      .select()
+      .single()
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 })
+    }
+
+    return NextResponse.json({ data })
+  } catch (error) {
+    return NextResponse.json({ error: "Failed to update gallery item" }, { status: 500 })
+  }
+}
+

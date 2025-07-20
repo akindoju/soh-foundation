@@ -87,12 +87,13 @@ function LoginForm({ onLogin }: { onLogin: (email: string, password: string) => 
     </div>
   )
 }
-
-// Gallery Management Component
+// Gallery Manager
 function GalleryManager() {
   const [galleryItems, setGalleryItems] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [uploading, setUploading] = useState(false)
+  const [editingItem, setEditingItem] = useState<any | null>(null)
+  const [editFile, setEditFile] = useState<File | null>(null)
   const [newItem, setNewItem] = useState({
     title: "",
     event_date: "",
@@ -103,7 +104,6 @@ function GalleryManager() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const { toast } = useToast()
 
-  // Fetch gallery items
   const fetchGalleryItems = async () => {
     try {
       const response = await fetch("/api/gallery")
@@ -111,18 +111,10 @@ function GalleryManager() {
       if (response.ok) {
         setGalleryItems(result.data || [])
       } else {
-        toast({
-          title: "Error",
-          description: "Failed to fetch gallery items",
-          variant: "destructive",
-        })
+        toast({ title: "Error", description: "Failed to fetch gallery items", variant: "destructive" })
       }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to fetch gallery items",
-        variant: "destructive",
-      })
+    } catch {
+      toast({ title: "Error", description: "Fetch error", variant: "destructive" })
     } finally {
       setLoading(false)
     }
@@ -132,183 +124,138 @@ function GalleryManager() {
     fetchGalleryItems()
   }, [])
 
-  // Handle file selection
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
-    if (file) {
-      // Validate file type
-      const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"]
-      if (!allowedTypes.includes(file.type)) {
-        toast({
-          title: "Invalid file type",
-          description: "Please select a JPEG, PNG, or WebP image",
-          variant: "destructive",
-        })
-        return
-      }
-
-      // Validate file size (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        toast({
-          title: "File too large",
-          description: "Please select an image smaller than 5MB",
-          variant: "destructive",
-        })
-        return
-      }
-
-      setSelectedFile(file)
+    if (!file) return
+    const allowed = ["image/jpeg", "image/jpg", "image/png", "image/webp"]
+    if (!allowed.includes(file.type)) {
+      toast({ title: "Invalid type", description: "Use JPEG, PNG, or WebP", variant: "destructive" })
+      return
     }
+    if (file.size > 5 * 1024 * 1024) {
+      toast({ title: "Too large", description: "Max 5MB allowed", variant: "destructive" })
+      return
+    }
+    editingItem ? setEditFile(file) : setSelectedFile(file)
   }
 
-  // Upload image
   const uploadImage = async (file: File): Promise<string | null> => {
     const formData = new FormData()
     formData.append("file", file)
-
     try {
       const response = await fetch("/api/upload", {
         method: "POST",
         body: formData,
       })
-
       const result = await response.json()
-      if (response.ok) {
-        return result.url
-      } else {
-        toast({
-          title: "Upload failed",
-          description: result.error || "Failed to upload image",
-          variant: "destructive",
-        })
-        return null
-      }
-    } catch (error) {
-      toast({
-        title: "Upload failed",
-        description: "Failed to upload image",
-        variant: "destructive",
-      })
+      if (response.ok) return result.url
+      toast({ title: "Upload failed", description: result.error || "", variant: "destructive" })
+      return null
+    } catch {
+      toast({ title: "Upload error", description: "Check connection", variant: "destructive" })
       return null
     }
   }
 
-  // Handle form submission
   const handleAddItem = async (e: React.FormEvent) => {
     e.preventDefault()
-
     if (!selectedFile) {
-      toast({
-        title: "No image selected",
-        description: "Please select an image to upload",
-        variant: "destructive",
-      })
+      toast({ title: "No image selected", variant: "destructive" })
       return
     }
 
     setUploading(true)
+    const imageUrl = await uploadImage(selectedFile)
+    if (!imageUrl) return setUploading(false)
 
     try {
-      // Upload image first
-      const imageUrl = await uploadImage(selectedFile)
-      if (!imageUrl) {
-        setUploading(false)
-        return
-      }
-
-      // Create gallery item
       const response = await fetch("/api/gallery", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          ...newItem,
-          image_url: imageUrl,
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...newItem, image_url: imageUrl }),
       })
-
       const result = await response.json()
       if (response.ok) {
         setGalleryItems([result.data, ...galleryItems])
         setNewItem({ title: "", event_date: "", location: "", description: "", image_url: "" })
         setSelectedFile(null)
-        // Reset file input
-        const fileInput = document.getElementById("image") as HTMLInputElement
-        if (fileInput) fileInput.value = ""
-
-        toast({
-          title: "Success",
-          description: "Gallery item added successfully",
-        })
+        toast({ title: "Success", description: "Item added" })
       } else {
-        toast({
-          title: "Error",
-          description: result.error || "Failed to add gallery item",
-          variant: "destructive",
-        })
+        toast({ title: "Error", description: result.error, variant: "destructive" })
       }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to add gallery item",
-        variant: "destructive",
-      })
+    } catch {
+      toast({ title: "Error", description: "Add failed", variant: "destructive" })
     } finally {
       setUploading(false)
     }
   }
 
-  // Delete gallery item
-  const handleDeleteItem = async (id: number) => {
-    if (!confirm("Are you sure you want to delete this item?")) return
+  const handleEditClick = (item: any) => {
+    setEditingItem(item)
+    setNewItem(item)
+    setEditFile(null)
+  }
+
+  const handleEditSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setUploading(true)
+
+    let imageUrl = newItem.image_url
+    if (editFile) {
+      const uploaded = await uploadImage(editFile)
+      if (uploaded) imageUrl = uploaded
+      else return setUploading(false)
+    }
 
     try {
-      const response = await fetch(`/api/gallery?id=${id}`, {
-        method: "DELETE",
+      const response = await fetch("/api/gallery", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...newItem, image_url: imageUrl }),
       })
 
+      const result = await response.json()
       if (response.ok) {
-        setGalleryItems(galleryItems.filter((item) => item.id !== id))
-        toast({
-          title: "Success",
-          description: "Gallery item deleted successfully",
-        })
+        setGalleryItems(galleryItems.map(item => (item.id === result.data.id ? result.data : item)))
+        setEditingItem(null)
+        setNewItem({ title: "", event_date: "", location: "", description: "", image_url: "" })
+        setEditFile(null)
+        toast({ title: "Updated", description: "Gallery item updated" })
       } else {
-        toast({
-          title: "Error",
-          description: "Failed to delete gallery item",
-          variant: "destructive",
-        })
+        toast({ title: "Update failed", description: result.error, variant: "destructive" })
       }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to delete gallery item",
-        variant: "destructive",
-      })
+    } catch {
+      toast({ title: "Error", description: "Update error", variant: "destructive" })
+    } finally {
+      setUploading(false)
     }
   }
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <Loader2 className="w-8 h-8 animate-spin" />
-      </div>
-    )
+  const handleDeleteItem = async (id: number) => {
+    if (!confirm("Are you sure?")) return
+    try {
+      const response = await fetch(`/api/gallery?id=${id}`, { method: "DELETE" })
+      if (response.ok) {
+        setGalleryItems(galleryItems.filter(item => item.id !== id))
+        toast({ title: "Deleted", description: "Item removed" })
+      } else {
+        toast({ title: "Failed", description: "Could not delete", variant: "destructive" })
+      }
+    } catch {
+      toast({ title: "Error", description: "Delete error", variant: "destructive" })
+    }
   }
+
+  if (loading) return <div className="py-12 text-center"><Loader2 className="w-8 h-8 animate-spin mx-auto" /></div>
 
   return (
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Plus className="w-5 h-5" />
-            Add New Gallery Item
-          </CardTitle>
+          <CardTitle>{editingItem ? "Edit Gallery Item" : "Add New Gallery Item"}</CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleAddItem} className="space-y-4">
+          <form onSubmit={editingItem ? handleEditSubmit : handleAddItem} className="space-y-4">
             <div className="grid md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="title">Event Name</Label>
@@ -349,34 +296,33 @@ function GalleryManager() {
               />
             </div>
             <div>
-              <Label htmlFor="image">Image Upload</Label>
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6">
-                <div className="text-center">
-                  <Upload className="w-8 h-8 mx-auto mb-2 text-gray-400" />
-                  <p className="text-gray-600 mb-2">Click to upload or drag and drop</p>
-                  <p className="text-sm text-gray-500">PNG, JPG, WebP up to 5MB</p>
-                  <Input
-                    id="image"
-                    type="file"
-                    accept="image/*"
-                    onChange={handleFileSelect}
-                    className="mt-2"
-                    required
-                  />
-                  {selectedFile && <p className="mt-2 text-sm text-green-600">Selected: {selectedFile.name}</p>}
-                </div>
-              </div>
+              <Label htmlFor="image">Image {editingItem ? "(optional)" : "(required)"}</Label>
+              <Input
+                id="image"
+                type="file"
+                accept="image/*"
+                onChange={handleFileSelect}
+                className="mt-2"
+                required={!editingItem}
+              />
+              {(selectedFile || editFile) && (
+                <p className="mt-2 text-sm text-green-600">
+                  Selected: {(selectedFile || editFile)?.name}
+                </p>
+              )}
             </div>
             <Button type="submit" disabled={uploading}>
-              {uploading ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Uploading...
-                </>
-              ) : (
-                "Add Gallery Item"
-              )}
+              {uploading ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Saving...</> : editingItem ? "Update" : "Add"}
             </Button>
+            {editingItem && (
+              <Button type="button" variant="ghost" onClick={() => {
+                setEditingItem(null)
+                setNewItem({ title: "", event_date: "", location: "", description: "", image_url: "" })
+                setEditFile(null)
+              }}>
+                Cancel
+              </Button>
+            )}
           </form>
         </CardContent>
       </Card>
@@ -387,40 +333,29 @@ function GalleryManager() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {galleryItems.length === 0 ? (
-              <p className="text-gray-500 text-center py-8">No gallery items found. Add your first item above.</p>
-            ) : (
-              galleryItems.map((item) => (
-                <div key={item.id} className="flex items-center gap-4 p-4 border rounded-lg">
-                  <div className="relative w-20 h-20 flex-shrink-0">
-                    <Image
-                      src={item.image_url || "/placeholder.svg"}
-                      alt={item.title}
-                      fill
-                      className="object-cover rounded"
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-semibold">{item.title}</h3>
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                      <Calendar className="w-4 h-4" />
-                      {new Date(item.event_date).toLocaleDateString()}
-                      <MapPin className="w-4 h-4 ml-2" />
-                      {item.location}
-                    </div>
-                    <p className="text-sm text-gray-600 mt-1">{item.description}</p>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button size="sm" variant="outline">
-                      <Edit className="w-4 h-4" />
-                    </Button>
-                    <Button size="sm" variant="destructive" onClick={() => handleDeleteItem(item.id)}>
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
+            {galleryItems.map((item) => (
+              <div key={item.id} className="flex items-center gap-4 p-4 border rounded-lg">
+                <div className="relative w-20 h-20 flex-shrink-0">
+                  <Image src={item.image_url || "/placeholder.svg"} alt={item.title} fill className="object-cover rounded" />
                 </div>
-              ))
-            )}
+                <div className="flex-1">
+                  <h3 className="font-semibold">{item.title}</h3>
+                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <Calendar className="w-4 h-4" /> {new Date(item.event_date).toLocaleDateString()}
+                    <MapPin className="w-4 h-4 ml-2" /> {item.location}
+                  </div>
+                  <p className="text-sm text-gray-600 mt-1">{item.description}</p>
+                </div>
+                <div className="flex gap-2">
+                  <Button size="sm" variant="outline" onClick={() => handleEditClick(item)}>
+                    <Edit className="w-4 h-4" />
+                  </Button>
+                  <Button size="sm" variant="destructive" onClick={() => handleDeleteItem(item.id)}>
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+            ))}
           </div>
         </CardContent>
       </Card>
