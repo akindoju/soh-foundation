@@ -34,7 +34,7 @@ export default function HomePage() {
                 width={60}
                 height={60}
                 className="mb-4"
-              />
+              />{/*
               <h1 className="text-3xl md:text-4xl font-bold mb-2">Stone of Help Foundation</h1>
               <p className="text-base md:text-lg mb-4 opacity-90">
                 Nourish, Educate, and Empower the Most Vulnerable
@@ -45,11 +45,11 @@ export default function HomePage() {
                 className="bg-white text-blue-600 hover:bg-gray-100"
               >
                 <Link href="/contact">Contact Us</Link>
-              </Button>
+              </Button>*/}
             </div>
           </div>
         </div>
-      </section>
+      </section> 
 
       {/* Rest of the Page (unchanged) */}
       {/* Mission Overview */}
