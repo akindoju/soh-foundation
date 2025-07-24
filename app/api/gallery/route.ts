@@ -23,9 +23,9 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { title, description, event_date, location, image_url } = body
+    const { title, description, event_date, location, image_urls } = body
 
-    if (!title || !description || !event_date || !location || !image_url) {
+    if (!title || !description || !event_date || !location || !image_urls?.length) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
     }
 
@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
           description,
           event_date,
           location,
-          image_url,
+          image_url: image_urls, // store as array
         },
       ])
       .select()
@@ -62,17 +62,19 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: "ID is required" }, { status: 400 })
     }
 
-    // Get the item first to delete the image from storage
+    // Fetch images to delete from storage
     const { data: item } = await supabaseAdmin
       .from("gallery")
       .select("image_url")
       .eq("id", id)
       .single()
 
-    if (item?.image_url) {
-      const urlParts = item.image_url.split("/")
-      const filePath = `gallery/${urlParts[urlParts.length - 1]}`
-      await supabaseAdmin.storage.from("images").remove([filePath])
+    if (item?.image_url && Array.isArray(item.image_url)) {
+      const paths = item.image_url.map((url: string) => {
+        const fileName = url.split("/").pop()
+        return `gallery/${fileName}`
+      })
+      await supabaseAdmin.storage.from("images").remove(paths)
     }
 
     const { error } = await supabaseAdmin.from("gallery").delete().eq("id", id)
@@ -91,7 +93,7 @@ export async function DELETE(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json()
-    const { id, title, description, event_date, location, image_url } = body
+    const { id, title, description, event_date, location, image_urls } = body
 
     if (!id || !title || !description || !event_date || !location) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
@@ -104,7 +106,7 @@ export async function PUT(request: NextRequest) {
         description,
         event_date,
         location,
-        image_url,
+        image_url: image_urls || [], // allow empty array
         updated_at: new Date().toISOString(),
       })
       .eq("id", id)
@@ -120,4 +122,3 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json({ error: "Failed to update gallery item" }, { status: 500 })
   }
 }
-

@@ -1,53 +1,53 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Heart, BookOpen, Utensils, Building } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 
+const sliderImages = ["/image1.jpeg", "/image2.jpeg", "/image3.jpeg"]
+
 export default function HomePage() {
+  const [currentSlide, setCurrentSlide] = useState(0)
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % sliderImages.length)
+    }, 4000)
+    return () => clearInterval(interval)
+  }, [])
+
   return (
     <div className="min-h-screen">
-      {/* Hero Video Section */}
+      {/* Hero Image Slider Section */}
       <section className="relative min-h-[50vh] md:min-h-[80vh] overflow-hidden">
-        <video
-          autoPlay
-          muted
-          loop
-          playsInline
-          className="absolute inset-0 w-full h-full object-cover"
-        >
-          <source src="/Homepage.mp4" type="video/mp4" />
-          Your browser does not support the video tag.
-        </video>
+        {sliderImages.map((src, index) => (
+          <Image
+            key={index}
+            src={src}
+            alt={`Slide ${index + 1}`}
+            fill
+            priority={index === 0}
+            className={`object-cover transition-opacity duration-1000 ${
+              currentSlide === index ? "opacity-100" : "opacity-0"
+            }`}
+          />
+        ))}
 
         <div className="absolute inset-0 bg-black bg-opacity-30 z-10" />
 
-        {/* Content Overlay */}
         <div className="relative z-20 h-full flex items-center">
           <div className="container mx-auto px-4">
             <div className="max-w-md text-white">
-              {/*
-              <Image
-                src="/logo.png"
-                alt="SOH Foundation Logo"
-                width={60}
-                height={60}
-                className="mb-4"
-              />
               <h1 className="text-3xl md:text-4xl font-bold mb-2">Stone of Help Foundation</h1>
               <p className="text-base md:text-lg mb-4 opacity-90">
                 Nourish, Educate, and Empower the Most Vulnerable
               </p>
-              <Button
-                asChild
-                size="sm"
-                className="bg-white text-blue-600 hover:bg-gray-100"
-              >
+              <Button asChild size="sm" className="bg-white text-blue-600 hover:bg-gray-100">
                 <Link href="/contact">Contact Us</Link>
               </Button>
-              */}
             </div>
           </div>
         </div>
