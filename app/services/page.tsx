@@ -93,7 +93,7 @@ export default function ServicesPage() {
 
           {/* Core Programs */}
           <div className="mb-16">
-            <h2 className="text-3xl font-bold mb-8">Our Core Programs (2023)</h2>
+            <h2 className="text-3xl font-bold mb-8">Our Core Programs </h2>
             <div className="grid md:grid-cols-3 gap-8">
               <Card className="text-center">
                 <CardContent className="p-8">
