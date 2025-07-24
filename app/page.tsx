@@ -21,7 +21,7 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen">
-      {/* Hero Image Slider Section */}
+      {/* Hero Image Slider */}
       <section className="relative min-h-[50vh] md:min-h-[80vh] overflow-hidden">
         {sliderImages.map((src, index) => (
           <Image
@@ -36,21 +36,17 @@ export default function HomePage() {
           />
         ))}
 
-        <div className="absolute inset-0 bg-black bg-opacity-40 z-10" />
-
-        {/* Bottom-left content */}
-        <div className="absolute bottom-6 left-6 z-20 max-w-md bg-black/60 text-white p-4 rounded">
-          <h1 className="text-xl md:text-2xl font-bold mb-2">Stone of Help Foundation</h1>
-          <p className="text-sm md:text-base mb-3 opacity-90">
-            Nourish, Educate, and Empower the Most Vulnerable
-          </p>
+        {/* Writeup (Bottom Left, No Background) */}
+        <div className="absolute bottom-6 left-6 z-20 text-white">
+          <h1 className="text-xl md:text-2xl font-bold mb-1">Stone of Help Foundation</h1>
+          <p className="text-sm md:text-base mb-2">Nourish, Educate, and Empower the Most Vulnerable</p>
           <Button asChild size="sm" className="bg-white text-blue-600 hover:bg-gray-100">
             <Link href="/contact">Contact Us</Link>
           </Button>
         </div>
       </section>
 
-      {/* Mission Overview */}
+      {/* Mission Section */}
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
