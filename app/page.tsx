@@ -36,20 +36,17 @@ export default function HomePage() {
           />
         ))}
 
-        <div className="absolute inset-0 bg-black bg-opacity-30 z-10" />
+        <div className="absolute inset-0 bg-black bg-opacity-40 z-10" />
 
-        <div className="relative z-20 h-full flex items-center">
-          <div className="container mx-auto px-4">
-            <div className="max-w-md text-white">
-              <h1 className="text-3xl md:text-4xl font-bold mb-2">Stone of Help Foundation</h1>
-              <p className="text-base md:text-lg mb-4 opacity-90">
-                Nourish, Educate, and Empower the Most Vulnerable
-              </p>
-              <Button asChild size="sm" className="bg-white text-blue-600 hover:bg-gray-100">
-                <Link href="/contact">Contact Us</Link>
-              </Button>
-            </div>
-          </div>
+        {/* Bottom-left content */}
+        <div className="absolute bottom-6 left-6 z-20 max-w-md bg-black/60 text-white p-4 rounded">
+          <h1 className="text-xl md:text-2xl font-bold mb-2">Stone of Help Foundation</h1>
+          <p className="text-sm md:text-base mb-3 opacity-90">
+            Nourish, Educate, and Empower the Most Vulnerable
+          </p>
+          <Button asChild size="sm" className="bg-white text-blue-600 hover:bg-gray-100">
+            <Link href="/contact">Contact Us</Link>
+          </Button>
         </div>
       </section>
 
