@@ -80,24 +80,17 @@ export default function GalleryPage() {
                     key={item.id}
                     className="overflow-hidden group cursor-pointer hover:shadow-lg transition-shadow"
                   >
-                    <div className="relative h-64">
-                      <Image
-                        src={(item.image_urls && item.image_urls[0]) || "/placeholder.svg"}
-                        alt={item.title}
-                        fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300 flex items-center justify-center">
-                        <Button
-                          variant="secondary"
-                          size="sm"
-                          className="opacity-0 group-hover:opacity-100 transition-opacity"
-                          onClick={() => handleOpenModal(item)}
-                        >
-                          <Eye className="w-4 h-4 mr-2" />
-                          View Details
-                        </Button>
-                      </div>
+                    <div className="relative h-48 overflow-x-auto whitespace-nowrap flex gap-2 p-2">
+                      {(item.image_urls || []).map((img: string, index: number) => (
+                        <div key={index} className="relative h-44 w-64 flex-shrink-0 rounded overflow-hidden">
+                          <Image
+                            src={img}
+                            alt={`Image ${index + 1}`}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                      ))}
                     </div>
                     <CardContent className="p-6">
                       <div className="flex items-center gap-2 mb-3">
@@ -111,7 +104,15 @@ export default function GalleryPage() {
                         <MapPin className="w-4 h-4 mr-1" />
                         {item.location}
                       </div>
-                      <p className="text-gray-600 text-sm">{item.description}</p>
+                      <p className="text-gray-600 text-sm mb-4">{item.description}</p>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleOpenModal(item)}
+                      >
+                        <Eye className="w-4 h-4 mr-2" />
+                        View Details
+                      </Button>
                     </CardContent>
                   </Card>
                 ))}
@@ -131,7 +132,6 @@ export default function GalleryPage() {
           {selectedImage && (
             <div className="fixed inset-0 bg-black bg-opacity-80 z-50 flex items-center justify-center px-4">
               <div className="relative w-full max-w-4xl bg-white rounded-lg overflow-hidden">
-                {/* Close */}
                 <button
                   className="absolute top-3 right-3 text-gray-700 hover:text-black"
                   onClick={() => setSelectedImage(null)}

@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
           description,
           event_date,
           location,
-          image_url: image_urls, // store as array
+          image_urls, //
         },
       ])
       .select()
@@ -65,12 +65,12 @@ export async function DELETE(request: NextRequest) {
     // Fetch images to delete from storage
     const { data: item } = await supabaseAdmin
       .from("gallery")
-      .select("image_url")
+      .select("image_urls") // ✅ fixed
       .eq("id", id)
       .single()
 
-    if (item?.image_url && Array.isArray(item.image_url)) {
-      const paths = item.image_url.map((url: string) => {
+    if (item?.image_urls && Array.isArray(item.image_urls)) {
+      const paths = item.image_urls.map((url: string) => {
         const fileName = url.split("/").pop()
         return `gallery/${fileName}`
       })
@@ -106,7 +106,7 @@ export async function PUT(request: NextRequest) {
         description,
         event_date,
         location,
-        image_url: image_urls || [], // allow empty array
+        image_urls: image_urls || [], // ✅ fixed
         updated_at: new Date().toISOString(),
       })
       .eq("id", id)

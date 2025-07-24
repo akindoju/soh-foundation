@@ -93,15 +93,15 @@ function GalleryManager() {
   const [loading, setLoading] = useState(true)
   const [uploading, setUploading] = useState(false)
   const [editingItem, setEditingItem] = useState<any | null>(null)
-  const [editFile, setEditFile] = useState<File | null>(null)
+  const [editFiles, setEditFiles] = useState<FileList | null>(null)
   const [newItem, setNewItem] = useState({
     title: "",
     event_date: "",
     location: "",
     description: "",
-    image_url: "",
+    image_urls: [] as string[],
   })
-  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null)
   const { toast } = useToast()
 
   const fetchGalleryItems = async () => {
@@ -125,60 +125,68 @@ function GalleryManager() {
   }, [])
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-    const allowed = ["image/jpeg", "image/jpg", "image/png", "image/webp"]
+  const files = e.target.files
+  if (!files || files.length === 0) return
+  const allowed = ["image/jpeg", "image/jpg", "image/png", "image/webp"]
+  for (const file of files) {
     if (!allowed.includes(file.type)) {
-      toast({ title: "Invalid type", description: "Use JPEG, PNG, or WebP", variant: "destructive" })
+      toast({ title: "Invalid file type", description: "Only JPEG, PNG, or WebP allowed", variant: "destructive" })
       return
     }
     if (file.size > 5 * 1024 * 1024) {
-      toast({ title: "Too large", description: "Max 5MB allowed", variant: "destructive" })
+      toast({ title: "File too large", description: "Max 5MB per image", variant: "destructive" })
       return
     }
-    editingItem ? setEditFile(file) : setSelectedFile(file)
+  }
+  if (editingItem) {
+    setEditFiles(files)
+  } else {
+    setSelectedFiles(files)
+  }
   }
 
-  const uploadImage = async (file: File): Promise<string | null> => {
+
+  const uploadImages = async (files: FileList): Promise<string[] | null> => {
     const formData = new FormData()
-    formData.append("file", file)
+    Array.from(files).forEach(file => formData.append("files", file))
+
     try {
       const response = await fetch("/api/upload", {
         method: "POST",
         body: formData,
       })
       const result = await response.json()
-      if (response.ok) return result.url
+      if (response.ok && result.urls) return result.urls
       toast({ title: "Upload failed", description: result.error || "", variant: "destructive" })
       return null
     } catch {
-      toast({ title: "Upload error", description: "Check connection", variant: "destructive" })
+      toast({ title: "Upload error", description: "Check your connection", variant: "destructive" })
       return null
     }
   }
 
   const handleAddItem = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!selectedFile) {
-      toast({ title: "No image selected", variant: "destructive" })
+    if (!selectedFiles) {
+      toast({ title: "No images selected", variant: "destructive" })
       return
     }
 
     setUploading(true)
-    const imageUrl = await uploadImage(selectedFile)
-    if (!imageUrl) return setUploading(false)
+    const uploadedUrls = await uploadImages(selectedFiles)
+    if (!uploadedUrls) return setUploading(false)
 
     try {
       const response = await fetch("/api/gallery", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...newItem, image_url: imageUrl }),
+        body: JSON.stringify({ ...newItem, image_urls: uploadedUrls }),
       })
       const result = await response.json()
       if (response.ok) {
         setGalleryItems([result.data, ...galleryItems])
-        setNewItem({ title: "", event_date: "", location: "", description: "", image_url: "" })
-        setSelectedFile(null)
+        setNewItem({ title: "", event_date: "", location: "", description: "", image_urls: [] })
+        setSelectedFiles(null)
         toast({ title: "Success", description: "Item added" })
       } else {
         toast({ title: "Error", description: result.error, variant: "destructive" })
@@ -193,17 +201,17 @@ function GalleryManager() {
   const handleEditClick = (item: any) => {
     setEditingItem(item)
     setNewItem(item)
-    setEditFile(null)
+    setEditFiles(null)
   }
 
   const handleEditSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setUploading(true)
 
-    let imageUrl = newItem.image_url
-    if (editFile) {
-      const uploaded = await uploadImage(editFile)
-      if (uploaded) imageUrl = uploaded
+    let urls = newItem.image_urls
+    if (editFiles) {
+      const uploaded = await uploadImages(editFiles)
+      if (uploaded) urls = uploaded
       else return setUploading(false)
     }
 
@@ -211,15 +219,15 @@ function GalleryManager() {
       const response = await fetch("/api/gallery", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...newItem, image_url: imageUrl }),
+        body: JSON.stringify({ ...newItem, image_urls: urls }),
       })
 
       const result = await response.json()
       if (response.ok) {
         setGalleryItems(galleryItems.map(item => (item.id === result.data.id ? result.data : item)))
         setEditingItem(null)
-        setNewItem({ title: "", event_date: "", location: "", description: "", image_url: "" })
-        setEditFile(null)
+        setNewItem({ title: "", event_date: "", location: "", description: "", image_urls: [] })
+        setEditFiles(null)
         toast({ title: "Updated", description: "Gallery item updated" })
       } else {
         toast({ title: "Update failed", description: result.error, variant: "destructive" })
@@ -259,55 +267,27 @@ function GalleryManager() {
             <div className="grid md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="title">Event Name</Label>
-                <Input
-                  id="title"
-                  value={newItem.title}
-                  onChange={(e) => setNewItem({ ...newItem, title: e.target.value })}
-                  required
-                />
+                <Input id="title" value={newItem.title} onChange={(e) => setNewItem({ ...newItem, title: e.target.value })} required />
               </div>
               <div>
                 <Label htmlFor="date">Date</Label>
-                <Input
-                  id="date"
-                  type="date"
-                  value={newItem.event_date}
-                  onChange={(e) => setNewItem({ ...newItem, event_date: e.target.value })}
-                  required
-                />
+                <Input id="date" type="date" value={newItem.event_date} onChange={(e) => setNewItem({ ...newItem, event_date: e.target.value })} required />
               </div>
             </div>
             <div>
               <Label htmlFor="location">Location</Label>
-              <Input
-                id="location"
-                value={newItem.location}
-                onChange={(e) => setNewItem({ ...newItem, location: e.target.value })}
-                required
-              />
+              <Input id="location" value={newItem.location} onChange={(e) => setNewItem({ ...newItem, location: e.target.value })} required />
             </div>
             <div>
               <Label htmlFor="description">Description</Label>
-              <Textarea
-                id="description"
-                value={newItem.description}
-                onChange={(e) => setNewItem({ ...newItem, description: e.target.value })}
-                required
-              />
+              <Textarea id="description" value={newItem.description} onChange={(e) => setNewItem({ ...newItem, description: e.target.value })} required />
             </div>
             <div>
-              <Label htmlFor="image">Image {editingItem ? "(optional)" : "(required)"}</Label>
-              <Input
-                id="image"
-                type="file"
-                accept="image/*"
-                onChange={handleFileSelect}
-                className="mt-2"
-                required={!editingItem}
-              />
-              {(selectedFile || editFile) && (
+              <Label htmlFor="images">Images {editingItem ? "(optional)" : "(required)"}</Label>
+              <Input id="images" type="file" accept="image/*" multiple onChange={handleFileSelect} className="mt-2" required={!editingItem} />
+              {(selectedFiles || editFiles) && (
                 <p className="mt-2 text-sm text-green-600">
-                  Selected: {(selectedFile || editFile)?.name}
+                  Selected: {Array.from(selectedFiles || editFiles || []).map(f => f.name).join(", ")}
                 </p>
               )}
             </div>
@@ -317,8 +297,8 @@ function GalleryManager() {
             {editingItem && (
               <Button type="button" variant="ghost" onClick={() => {
                 setEditingItem(null)
-                setNewItem({ title: "", event_date: "", location: "", description: "", image_url: "" })
-                setEditFile(null)
+                setNewItem({ title: "", event_date: "", location: "", description: "", image_urls: [] })
+                setEditFiles(null)
               }}>
                 Cancel
               </Button>
@@ -334,9 +314,18 @@ function GalleryManager() {
         <CardContent>
           <div className="space-y-4">
             {galleryItems.map((item) => (
-              <div key={item.id} className="flex items-center gap-4 p-4 border rounded-lg">
-                <div className="relative w-20 h-20 flex-shrink-0">
-                  <Image src={item.image_url || "/placeholder.svg"} alt={item.title} fill className="object-cover rounded" />
+              <div key={item.id} className="flex flex-col md:flex-row gap-4 p-4 border rounded-lg">
+                <div className="flex gap-2 overflow-x-auto max-w-full">
+                  {(item.image_urls || []).map((url: string, index: number) => (
+                    <div key={index} className="relative w-20 h-20 flex-shrink-0">
+                      <Image
+                        src={url}
+                        alt={`${item.title} - ${index + 1}`}
+                        fill
+                        className="object-cover rounded"
+                      />
+                    </div>
+                  ))}
                 </div>
                 <div className="flex-1">
                   <h3 className="font-semibold">{item.title}</h3>
@@ -362,6 +351,8 @@ function GalleryManager() {
     </div>
   )
 }
+
+
 
 // Content Editor Component (keeping existing implementation)
 function ContentEditor() {
