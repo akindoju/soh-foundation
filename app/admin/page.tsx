@@ -10,7 +10,8 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Upload, Calendar, MapPin, Edit, Trash2, Plus, LogOut, Loader2 } from "lucide-react"
+import { Switch } from "@/components/ui/switch"
+import { Calendar, Clock, Edit, Loader2, LogOut, MapPin, Plus, Trash2 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import Image from "next/image"
 
@@ -353,6 +354,42 @@ function GalleryManager() {
 }
 
 
+function KeepAliveManager() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Supabase Keep-Alive</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Badge className="bg-green-600 text-white hover:bg-green-600">Scheduled</Badge>
+              <span className="inline-flex items-center gap-2 text-sm text-gray-600">
+                <Clock className="h-4 w-4" />
+                Every 5 days at 4:00 AM UTC
+              </span>
+            </div>
+            <p className="max-w-2xl text-sm leading-6 text-gray-600">
+              This runs on the server through Vercel Cron and touches both the gallery database and image storage so the
+              Supabase project has recent activity.
+            </p>
+            <p className="text-xs text-gray-500">
+              To turn it off, set <span className="font-mono">SUPABASE_KEEP_ALIVE_ENABLED=false</span> in your deployment
+              environment. Keep <span className="font-mono">CRON_SECRET</span> set so only the scheduler can call it.
+            </p>
+          </div>
+          <div className="flex items-center gap-3 rounded border bg-gray-50 px-4 py-3">
+            <Switch checked disabled aria-label="Supabase keep-alive enabled" />
+            <span className="text-sm font-medium text-gray-700">Keep alive enabled</span>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+
 
 // Content Editor Component (keeping existing implementation)
 function ContentEditor() {
@@ -473,7 +510,9 @@ export default function AdminPage() {
       </div>
 
       <div className="container mx-auto px-4 py-8">
-        <Tabs defaultValue="gallery" className="space-y-6">
+        <KeepAliveManager />
+
+        <Tabs defaultValue="gallery" className="mt-6 space-y-6">
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="gallery">Gallery Management</TabsTrigger>
             <TabsTrigger value="content">Content Editor</TabsTrigger>

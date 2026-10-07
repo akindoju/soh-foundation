@@ -1,9 +1,10 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { supabaseAdmin } from "@/lib/supabaseAdmin"
+import { getSupabaseAdmin } from "@/lib/supabaseAdmin"
 
 // GET - Fetch all gallery items
 export async function GET() {
   try {
+    const supabaseAdmin = getSupabaseAdmin()
     const { data, error } = await supabaseAdmin
       .from("gallery")
       .select("*")
@@ -22,6 +23,7 @@ export async function GET() {
 // POST - Create new gallery item
 export async function POST(request: NextRequest) {
   try {
+    const supabaseAdmin = getSupabaseAdmin()
     const body = await request.json()
     const { title, description, event_date, location, image_urls } = body
 
@@ -55,6 +57,7 @@ export async function POST(request: NextRequest) {
 // DELETE - Remove gallery item
 export async function DELETE(request: NextRequest) {
   try {
+    const supabaseAdmin = getSupabaseAdmin()
     const { searchParams } = new URL(request.url)
     const id = searchParams.get("id")
 
@@ -92,6 +95,7 @@ export async function DELETE(request: NextRequest) {
 // PUT - Update gallery item
 export async function PUT(request: NextRequest) {
   try {
+    const supabaseAdmin = getSupabaseAdmin()
     const body = await request.json()
     const { id, title, description, event_date, location, image_urls } = body
 

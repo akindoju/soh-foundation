@@ -1,8 +1,9 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { supabaseServer } from "@/lib/supabase"
+import { getSupabaseServer } from "@/lib/supabase"
 
 export async function POST(request: NextRequest) {
   try {
+    const supabaseServer = getSupabaseServer()
     const formData = await request.formData()
     const files = formData.getAll("files") as File[]
 

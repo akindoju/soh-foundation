@@ -1,17 +1,19 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Inter } from "next/font/google"
 import "./globals.css"
 import Header from "@/components/layout/header"
 import Footer from "@/components/layout/footer"
-
-const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   title: "Stone of Help Foundation - Nourish, Educate, Empower",
   description:
     "Dedicated to nourishing, educating, and empowering the most vulnerable members of our communities through comprehensive programs that create lasting positive change.",
-    generator: 'v0.dev'
+  openGraph: {
+    title: "Stone of Help Foundation",
+    description:
+      "Nourishing, educating, and empowering vulnerable communities through real humanitarian work.",
+    images: ["/image1.jpeg"],
+  },
 }
 
 export default function RootLayout({
@@ -21,7 +23,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body>
         <Header />
         <main>{children}</main>
         <Footer />
