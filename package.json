@@ -6,7 +6,9 @@
     "build": "next build",
     "dev": "next dev",
     "lint": "next lint",
-    "start": "next start"
+    "start": "next start",
+    "deploy": "bash scripts/deploy.sh",
+    "deploy:prod": "bash scripts/deploy.sh prod"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
